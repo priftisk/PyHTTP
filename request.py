@@ -1,4 +1,4 @@
-from server.headers import *
+from headers import *
 
 class Request:
     def __init__(self, raw_string):
