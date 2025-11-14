@@ -15,6 +15,14 @@ class Router:
     @routes.setter
     def routes(self, value):
         self.__routes = value
+    
+    def show_routes(self):
+        print("-----------ROUTES-----------")
+        for path, html in self.routes.items():
+            print(f"{path} -> {html}")
+
+    def route_exists(self, route):
+        return self.routes.get(route) is not None
 
     def route_to_html(self, route):
         html_file = self.routes.get(route)
