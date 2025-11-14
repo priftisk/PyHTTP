@@ -20,8 +20,8 @@ class Response:
 
     def encode(self):
         # Compute content length
-        html = self.router.route_to_html(self.request.path)
-        self.__body = html
+        self.__body = self.router.route_to_html(self.request.path)
+        print(self.__body)
         body_bytes = self.__body.encode("utf-8")
         self.__headers["Content-Length"] = str(len(body_bytes))
         # Build the header section
