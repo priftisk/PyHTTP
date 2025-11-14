@@ -38,18 +38,17 @@ class Server:
         self.clients[addr[0]].append(request)
         print(f"[+] {request.method} {request.path}")
         if not self.router.route_exists(request.path):
-            #TODO redirect to notfound page here???
+            response = Response(request, 404)
             print(f"[!] Route {request.path} does not exist.")
         else:
             response = Response(request)
             response.body = self.router.route_to_html(request.path)
-            client_socket.send(response.encode())
-
         
+        client_socket.send(response.encode())
         client_socket.close()
 
     def run(self):
-        print(f"[*] Server started on port {self.bind_port}")
+        print(f"[*] Server started {self.bind_ip}:{self.bind_port}")
 
         try:
             while True:
