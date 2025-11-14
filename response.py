@@ -16,7 +16,6 @@ class Response:
         # Build the header section
         header_str = "\r\n".join(f"{k}: {v}" for k, v in self.__headers.items())
 
-        # Combine everything properly
         response = (
             f"{self.__http_version} {self.__status_code} {self.__status_message}\r\n"
             f"{header_str}\r\n\r\n"
