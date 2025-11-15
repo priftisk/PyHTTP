@@ -2,18 +2,24 @@ from request.request import Request
 from response.response_headers import ResponseHeaders
 from response.response_body import ResponseBody
 
-mappings = {200: "OK", 201: "Created", 404: "Not Found", 500: "Internal Server Error"}
+mappings: dict[int, str] = {
+    200: "OK",
+    201: "Created",
+    404: "Not Found",
+    500: "Internal Server Error",
+}
 
 
 class Response:
-    def __init__(self, request, status_code=200, content_type="html"):
+    def __init__(
+        self, request: Request, status_code: int = 200, content_type: str = "html"
+    ):
         self.__request: Request = request
-        self.__http_version = "HTTP/1.1"
-        self.__status_code = status_code
-        self.__status_message = "OK"
-        self.__headers = ResponseHeaders(content_type=content_type)
-        # self.__body = "<html><body><h1>Not found.</h1></body></html>"
-        self.__body = ResponseBody()
+        self.__http_version: str = "HTTP/1.1"
+        self.__status_code: int = status_code
+        self.__status_message: str = "OK"
+        self.__headers: ResponseHeaders = ResponseHeaders(content_type=content_type)
+        self.__body: ResponseBody = ResponseBody()
 
     @property
     def status_code(self):
