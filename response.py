@@ -1,5 +1,6 @@
 from request import Request
 from response_headers import ResponseHeaders
+from response_body import ResponseBody
 
 mappings = {200: "OK", 201: "Created", 404: "Not Found", 500: "Internal Server Error"}
 
@@ -11,7 +12,8 @@ class Response:
         self.__status_code = status_code
         self.__status_message = "OK"
         self.__headers = ResponseHeaders(content_type=content_type)
-        self.__body = "<html><body><h1>Not found.</h1></body></html>"
+        # self.__body = "<html><body><h1>Not found.</h1></body></html>"
+        self.__body = ResponseBody()
 
     @property
     def status_code(self):
@@ -50,17 +52,15 @@ class Response:
     def body(self, value):
         self.__body = value
 
-    def encode(self):
-        # Compute content length
-        body_bytes = self.body.encode("utf-8")
-        self.headers.content_length = str(len(body_bytes))
-
-        # Build the header section
-        header_str = self.headers.encode()
-
-        response = (
+    def __response(self, header_str: str, body_bytes: bytes):
+        return (
             f"{self.__http_version} {self.__status_code} {self.__status_message}\r\n"
             f"{header_str}\r\n\r\n"
         ).encode("utf-8") + body_bytes
 
-        return response
+    def encode(self):
+        body_bytes = self.body.encode("utf-8")
+
+        header_str = self.headers.encode(body_bytes)
+
+        return self.__response(header_str, body_bytes)

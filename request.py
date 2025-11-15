@@ -1,4 +1,5 @@
 from request_headers import *
+import datetime
 
 
 class Request:
@@ -8,7 +9,12 @@ class Request:
         self.__path = None
         self.__http_version = None
         self.__headers = None
+        self.__timestamp = datetime.datetime.now()
         self.parse()
+
+    @property
+    def timestamp(self):
+        return self.__timestamp
 
     @property
     def raw_string(self):

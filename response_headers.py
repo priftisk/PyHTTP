@@ -31,8 +31,9 @@ class ResponseHeaders:
             h = "application/json"
         return h
 
-    def encode(self):
-        "\r\n".join(
+    def encode(self, body_bytes: bytes):
+        self.content_length = str(len(body_bytes))
+        return "\r\n".join(
             f"{k}: {v}"
             for k, v in {
                 "Content-Type": self.content_type,
