@@ -1,4 +1,4 @@
-class Headers:
+class RequestHeaders:
     def __init__(self, headers_arr):
         self.__host = None
         self.__user_agent = None
@@ -8,8 +8,7 @@ class Headers:
         self.__connection = None
         self.__referer = None
         self.parse(headers_arr)
-        
-    
+
     @property
     def host(self):
         return self.__host
@@ -65,16 +64,16 @@ class Headers:
     @referer.setter
     def referer(self, value):
         self.__referer = value
-        
+
     def parse(self, headers_arr):
         for h in headers_arr:
             h_name = h[0].strip()
             h_value = h[1].strip()
             match h_name:
                 case "Host":
-                    self.host=h_value
+                    self.host = h_value
                 case "User-Agent":
-                    self.user_agent=h_value
+                    self.user_agent = h_value
                 case "Accept":
                     self.accept = h_value
                 case "Accept-Language":
@@ -85,4 +84,3 @@ class Headers:
                     self.connection = h_value
                 case "Referer":
                     self.referer = h_value
-                
