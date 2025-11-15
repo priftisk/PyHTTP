@@ -1,7 +1,7 @@
 import socket
 import threading
-from request import Request
-from response import Response
+from request.request import Request
+from response.response import Response
 from router.router import Router
 from client_handler import ClientHandler
 
@@ -48,6 +48,9 @@ class Server:
         data = client_socket.recv(1024)
         request = Request(data)
         self.client_handler.add_client(addr, request)
+        print(
+            f"[+] {request.method} {request.path} [{request.timestamp.today().strftime("%d/%m/%Y %H:%M:%S")}]"
+        )
         if not self.router.route_exists(request.path):
             response = Response(request, 404)
             print(f"[!] Route {request.path} does not exist.")

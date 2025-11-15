@@ -1,6 +1,6 @@
-from request import Request
-from response_headers import ResponseHeaders
-from response_body import ResponseBody
+from request.request import Request
+from response.response_headers import ResponseHeaders
+from response.response_body import ResponseBody
 
 mappings = {200: "OK", 201: "Created", 404: "Not Found", 500: "Internal Server Error"}
 
