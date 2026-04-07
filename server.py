@@ -4,6 +4,7 @@ from request.request import Request
 from response.response import Response
 from router.router import Router
 from client_handler import ClientHandler
+from middleware.middleware import Middleware
 
 
 class Server:
@@ -13,6 +14,7 @@ class Server:
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__router = Router(routes={"/": "index.html"})
         self.__client_handler = ClientHandler()
+        self.__middlewares: list[Middleware] = []
         self.__setup()
 
     def __setup(self):
@@ -44,6 +46,17 @@ class Server:
     def clients(self):
         return self.__clients
 
+    def add_middlewares(self, middlewares: list[Middleware]):
+        for m in middlewares:
+            if m not in self.__middlewares:
+                self.__middlewares.append(m)
+
+    def verify_middlewares(self, request: Request) -> bool | str:
+        for m in self.__middlewares:
+            if not m.verify(request):
+                return False, m.error_msg
+        return True, None
+
     def handle_client(self, client_socket: socket.socket, addr):
         data = client_socket.recv(1024)
         request = Request(data)
@@ -51,16 +64,28 @@ class Server:
         print(
             f"[+] {request.method} {request.path} [{request.timestamp.today().strftime("%d/%m/%Y %H:%M:%S")}]"
         )
-        if not self.router.route_exists(request.path):
-            response = Response(request, 404)
-            print(f"[!] Route {request.path} does not exist.")
-        else:
-            response = Response(request)
-            html_body = self.router.route_to_html(request.path)
-            response.body = html_body
+        try:
+            valid, _ = self.verify_middlewares(request)
 
+            if not valid:
+                response = Response(request, 401)
+                return self.send_response(client_socket, response)
+
+            if not self.router.route_exists(request.path):
+                print(f"[!] Route {request.path} does not exist.")
+                response = Response(request, 404)
+            else:
+                html_body = self.router.route_to_html(request.path)
+                response = Response(request)
+                response.body = html_body
+
+            self.send_response(client_socket, response)
+
+        finally:
+            client_socket.close()
+
+    def send_response(self, client_socket, response):
         client_socket.send(response.encode())
-        client_socket.close()
 
     def run(self):
         print(f"[*] Server started {self.bind_ip}:{self.bind_port}")

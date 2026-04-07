@@ -5,6 +5,7 @@ from response.response_body import ResponseBody
 mappings: dict[int, str] = {
     200: "OK",
     201: "Created",
+    401: "Forbidden",
     404: "Not Found",
     500: "Internal Server Error",
 }
