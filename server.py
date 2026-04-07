@@ -4,6 +4,7 @@ from request.request import Request
 from response.response import Response
 from router.router import Router
 from client_handler import ClientHandler
+from middleware.middleware import Middleware
 
 
 class Server:
@@ -13,6 +14,7 @@ class Server:
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__router = Router(routes={"/": "index.html"})
         self.__client_handler = ClientHandler()
+        self.__middleware = Middleware()
         self.__setup()
 
     def __setup(self):
