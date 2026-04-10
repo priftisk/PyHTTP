@@ -1,11 +1,9 @@
-from middleware.middleware import Middleware
-
-
 class Config:
     def __init__(self, host="0.0.0.0", port=9999):
         self.__host = host
         self.__port = port
         self.__middlewares: list[str] = []
+        self.parse()
 
     @property
     def host(self):
