@@ -7,10 +7,11 @@ from client_handler import ClientHandler
 from middleware.middleware import Middleware
 from logger.logger import Logger
 from config.config import Config
+import importlib
 
 
 class Server:
-    def __init__(self):
+    def __init__(self, config: Config):
         self.__bind_ip = None
         self.__bind_port = None
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,16 +19,24 @@ class Server:
         self.__client_handler = ClientHandler()
         self.__middlewares: list[Middleware] = []
         self.__logger: Logger = Logger()
-        self.__config: Config = Config()
+        self.__config: Config = config
         self.__setup()
 
+    def __parse_middlewares(self):
+        for m in self.config.middlewares:
+            parts = m.rsplit(".", 1)
+            module = importlib.import_module(parts[0])
+            my_class = getattr(module, parts[1])
+            print(my_class)
+            self.__middlewares.append(my_class)
+
     def __parse_config(self):
-        self.config.parse()
         self.bind_ip = self.config.host
         self.bind_port = self.config.port
 
     def __setup(self):
         self.__parse_config()
+        self.__parse_middlewares()
         self.socket.bind((self.bind_ip, self.bind_port))
         self.socket.listen(5)
         self.socket.settimeout(1.0)  # 1-second timeout to check for KeyboardInterrupt
