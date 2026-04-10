@@ -4,9 +4,14 @@ from request.request import Request
 
 class AllowedHosts(Middleware):
     def __init__(self, hosts=[]):
-        self.__allowed_hosts = hosts
-        self.__error_msg = None
-        super().__init__("Allowed Hosts")
+        try:
+            from settings import ALLOWED_HOSTS
+
+            self.__allowed_hosts = ALLOWED_HOSTS
+            self.__error_msg = None
+            super().__init__("Allowed Hosts")
+        except ImportError as e:
+            raise Exception(e.msg)
 
     @property
     def error_msg(self):

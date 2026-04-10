@@ -22,21 +22,17 @@ class Server:
         self.__config: Config = config
         self.__setup()
 
-    def __parse_middlewares(self):
+    def __setup_from_config(self):
+        self.bind_ip = self.config.host
+        self.bind_port = self.config.port
         for m in self.config.middlewares:
             parts = m.rsplit(".", 1)
             module = importlib.import_module(parts[0])
-            my_class = getattr(module, parts[1])
-            print(my_class)
-            self.__middlewares.append(my_class)
-
-    def __parse_config(self):
-        self.bind_ip = self.config.host
-        self.bind_port = self.config.port
+            class_name = getattr(module, parts[1])
+            self.__middlewares.append(class_name())
 
     def __setup(self):
-        self.__parse_config()
-        self.__parse_middlewares()
+        self.__setup_from_config()
         self.socket.bind((self.bind_ip, self.bind_port))
         self.socket.listen(5)
         self.socket.settimeout(1.0)  # 1-second timeout to check for KeyboardInterrupt
@@ -81,10 +77,10 @@ class Server:
     def logger(self):
         return self.__logger
 
-    def add_middlewares(self, middlewares: list[Middleware]):
-        for m in middlewares:
-            if m not in self.__middlewares:
-                self.__middlewares.append(m)
+    # def add_middlewares(self, middlewares: list[Middleware]):
+    #     for m in middlewares:
+    #         if m not in self.__middlewares:
+    #             self.__middlewares.append(m)
 
     def verify_middlewares(self, request: Request) -> bool | str:
         for m in self.__middlewares:
