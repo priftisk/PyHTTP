@@ -6,23 +6,35 @@ from router.router import Router
 from client_handler import ClientHandler
 from middleware.middleware import Middleware
 from logger.logger import Logger
+from config.config import Config
 
 
 class Server:
-    def __init__(self, bind_ip="0.0.0.0", bind_port=9999):
-        self.__bind_ip = bind_ip
-        self.__bind_port = bind_port
+    def __init__(self):
+        self.__bind_ip = None
+        self.__bind_port = None
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__router = Router(routes={"/": "index.html"})
         self.__client_handler = ClientHandler()
         self.__middlewares: list[Middleware] = []
         self.__logger: Logger = Logger()
+        self.__config: Config = Config()
         self.__setup()
 
+    def __parse_config(self):
+        self.config.parse()
+        self.bind_ip = self.config.host
+        self.bind_port = self.config.port
+
     def __setup(self):
+        self.__parse_config()
         self.socket.bind((self.bind_ip, self.bind_port))
         self.socket.listen(5)
         self.socket.settimeout(1.0)  # 1-second timeout to check for KeyboardInterrupt
+
+    @property
+    def config(self):
+        return self.__config
 
     @property
     def client_handler(self):
@@ -36,9 +48,17 @@ class Server:
     def bind_ip(self):
         return self.__bind_ip
 
+    @bind_ip.setter
+    def bind_ip(self, value):
+        self.__bind_ip = value
+
     @property
     def bind_port(self):
         return self.__bind_port
+
+    @bind_port.setter
+    def bind_port(self, value):
+        self.__bind_port = value
 
     @property
     def router(self):
