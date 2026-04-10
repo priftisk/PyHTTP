@@ -22,14 +22,20 @@ class Server:
         self.__config: Config = config
         self.__setup()
 
-    def __setup_from_config(self):
+    def __setup_host_port(self):
         self.bind_ip = self.config.host
         self.bind_port = self.config.port
+
+    def __setup_middlewares(self):
         for m in self.config.middlewares:
             parts = m.rsplit(".", 1)
             module = importlib.import_module(parts[0])
             class_name = getattr(module, parts[1])
             self.__middlewares.append(class_name())
+
+    def __setup_from_config(self):
+        self.__setup_host_port()
+        self.__setup_middlewares()
 
     def __setup(self):
         self.__setup_from_config()
