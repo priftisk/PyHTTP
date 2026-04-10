@@ -5,6 +5,7 @@ from response.response import Response
 from router.router import Router
 from client_handler import ClientHandler
 from middleware.middleware import Middleware
+from logger.logger import Logger
 
 
 class Server:
@@ -15,6 +16,7 @@ class Server:
         self.__router = Router(routes={"/": "index.html"})
         self.__client_handler = ClientHandler()
         self.__middlewares: list[Middleware] = []
+        self.__logger: Logger = Logger()
         self.__setup()
 
     def __setup(self):
@@ -46,6 +48,10 @@ class Server:
     def clients(self):
         return self.__clients
 
+    @property
+    def logger(self):
+        return self.__logger
+
     def add_middlewares(self, middlewares: list[Middleware]):
         for m in middlewares:
             if m not in self.__middlewares:
@@ -61,9 +67,6 @@ class Server:
         data = client_socket.recv(1024)
         request = Request(data)
         self.client_handler.add_client(addr, request)
-        print(
-            f"[+] {request.method} {request.path} [{request.timestamp.today().strftime("%d/%m/%Y %H:%M:%S")}]"
-        )
         try:
             valid, _ = self.verify_middlewares(request)
 
@@ -72,7 +75,7 @@ class Server:
                 return self.send_response(client_socket, response)
 
             if not self.router.route_exists(request.path):
-                print(f"[!] Route {request.path} does not exist.")
+                self.logger.error(f"Route {request.path} does not exist.")
                 response = Response(request, 404)
             else:
                 html_body = self.router.route_to_html(request.path)
@@ -82,13 +85,14 @@ class Server:
             self.send_response(client_socket, response)
 
         finally:
+            self.logger.info(f"{request.method} {request.path} {response.status_code}")
             client_socket.close()
 
     def send_response(self, client_socket, response):
         client_socket.send(response.encode())
 
     def run(self):
-        print(f"[*] Server started {self.bind_ip}:{self.bind_port}")
+        self.logger.info(f"Server started {self.bind_ip}:{self.bind_port}")
 
         try:
             while True:
