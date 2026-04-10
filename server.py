@@ -6,23 +6,46 @@ from router.router import Router
 from client_handler import ClientHandler
 from middleware.middleware import Middleware
 from logger.logger import Logger
+from config.config import Config
+import importlib
 
 
 class Server:
-    def __init__(self, bind_ip="0.0.0.0", bind_port=9999):
-        self.__bind_ip = bind_ip
-        self.__bind_port = bind_port
+    def __init__(self, config: Config):
+        self.__bind_ip = None
+        self.__bind_port = None
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__router = Router(routes={"/": "index.html"})
         self.__client_handler = ClientHandler()
         self.__middlewares: list[Middleware] = []
         self.__logger: Logger = Logger()
+        self.__config: Config = config
         self.__setup()
 
+    def __setup_host_port(self):
+        self.bind_ip = self.config.host
+        self.bind_port = self.config.port
+
+    def __setup_middlewares(self):
+        for m in self.config.middlewares:
+            parts = m.rsplit(".", 1)
+            module = importlib.import_module(parts[0])
+            class_name = getattr(module, parts[1])
+            self.__middlewares.append(class_name())
+
+    def __setup_from_config(self):
+        self.__setup_host_port()
+        self.__setup_middlewares()
+
     def __setup(self):
+        self.__setup_from_config()
         self.socket.bind((self.bind_ip, self.bind_port))
         self.socket.listen(5)
         self.socket.settimeout(1.0)  # 1-second timeout to check for KeyboardInterrupt
+
+    @property
+    def config(self):
+        return self.__config
 
     @property
     def client_handler(self):
@@ -36,9 +59,17 @@ class Server:
     def bind_ip(self):
         return self.__bind_ip
 
+    @bind_ip.setter
+    def bind_ip(self, value):
+        self.__bind_ip = value
+
     @property
     def bind_port(self):
         return self.__bind_port
+
+    @bind_port.setter
+    def bind_port(self, value):
+        self.__bind_port = value
 
     @property
     def router(self):
@@ -52,10 +83,10 @@ class Server:
     def logger(self):
         return self.__logger
 
-    def add_middlewares(self, middlewares: list[Middleware]):
-        for m in middlewares:
-            if m not in self.__middlewares:
-                self.__middlewares.append(m)
+    # def add_middlewares(self, middlewares: list[Middleware]):
+    #     for m in middlewares:
+    #         if m not in self.__middlewares:
+    #             self.__middlewares.append(m)
 
     def verify_middlewares(self, request: Request) -> bool | str:
         for m in self.__middlewares:
