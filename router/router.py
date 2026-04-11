@@ -32,23 +32,23 @@ class Router:
         for route in self.routes:
             print(f"{route.path} -> {route.html}")
 
-    def route_exists(self, route):
+    def route_exists(self, route) -> bool:
         for r in self.routes:
             if r.path == route:
                 return True
         return False
 
-    def get_html_from_path(self, route):
+    def get_html_from_path(self, route) -> str | None:
         for r in self.routes:
             if r.path == route:
                 return r.html
         return None
 
-    def route_to_html(self, route):
-        html_file = self.get_html_from_path(route)
+    def path_to_html(self, path) -> str:
+        html_file = self.get_html_from_path(path)
         if not html_file:
             raise Exception(
-                f"No matching html file for route: {route}",
+                f"No matching html file for route: {path}",
             )
         html = self.filereader.read(filepath=html_file).encode()
         return html
