@@ -66,6 +66,9 @@ class Server:
     def handle_client(self, client_socket: socket.socket, addr):
         data = client_socket.recv(1024)
         request = Request(data)
+        if not request.valid:
+            self.logger.error("Invalid request. Closing connection...")
+            return client_socket.close()
         self.client_handler.add_client(addr, request)
         try:
             valid, _ = self.verify_middlewares(request)
