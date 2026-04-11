@@ -15,7 +15,7 @@ class Server:
         self.__bind_ip = None
         self.__bind_port = None
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__router = Router(routes={"/": "index.html"})
+        self.__router = Router()
         self.__client_handler = ClientHandler()
         self.__middlewares: list[Middleware] = []
         self.__logger: Logger = Logger()
