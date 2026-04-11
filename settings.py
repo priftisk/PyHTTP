@@ -3,3 +3,5 @@ SERVER_PORT = 9999
 ALLOWED_HOSTS = ["localhost"]
 
 MIDDLEWARE = ["middleware.allowed_hosts.AllowedHosts"]
+
+ROUTES = [{"path": "/", "html": "index.html"}, {"path": "/posts", "html": "posts.html"}]

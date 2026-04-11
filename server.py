@@ -1,5 +1,4 @@
-import socket
-import threading
+import socket, threading
 from request.request import Request
 from response.response import Response
 from router.router import Router
@@ -15,7 +14,7 @@ class Server:
         self.__bind_ip = None
         self.__bind_port = None
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__router = Router(routes={"/": "index.html"})
+        self.__router = Router()
         self.__client_handler = ClientHandler()
         self.__middlewares: list[Middleware] = []
         self.__logger: Logger = Logger()
@@ -109,7 +108,7 @@ class Server:
                 self.logger.error(f"Route {request.path} does not exist.")
                 response = Response(request, 404)
             else:
-                html_body = self.router.route_to_html(request.path)
+                html_body = self.router.path_to_html(request.path)
                 response = Response(request)
                 response.body = html_body
 
