@@ -2,28 +2,23 @@ import socket, threading
 from request.request import Request
 from response.response import Response
 from router.router import Router
-from client_handler import ClientHandler
+from helper.client_handler import ClientHandler
 from middleware.middleware import Middleware
 from logger.logger import Logger
 from config.config import Config
+from .server_socket import ServerSocket
 import importlib
 
 
 class Server:
     def __init__(self, config: Config):
-        self.__bind_ip = None
-        self.__bind_port = None
-        self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__socket = ServerSocket(config)
         self.__router = Router()
         self.__client_handler = ClientHandler()
         self.__middlewares: list[Middleware] = []
         self.__logger: Logger = Logger()
         self.__config: Config = config
         self.__setup()
-
-    def __setup_host_port(self):
-        self.bind_ip = self.config.host
-        self.bind_port = self.config.port
 
     def __setup_middlewares(self):
         for m in self.config.middlewares:
@@ -33,14 +28,10 @@ class Server:
             self.__middlewares.append(class_name())
 
     def __setup_from_config(self):
-        self.__setup_host_port()
         self.__setup_middlewares()
 
     def __setup(self):
         self.__setup_from_config()
-        self.socket.bind((self.bind_ip, self.bind_port))
-        self.socket.listen(5)
-        self.socket.settimeout(1.0)  # 1-second timeout to check for KeyboardInterrupt
 
     @property
     def config(self):
@@ -55,22 +46,6 @@ class Server:
         return self.__socket
 
     @property
-    def bind_ip(self):
-        return self.__bind_ip
-
-    @bind_ip.setter
-    def bind_ip(self, value):
-        self.__bind_ip = value
-
-    @property
-    def bind_port(self):
-        return self.__bind_port
-
-    @bind_port.setter
-    def bind_port(self, value):
-        self.__bind_port = value
-
-    @property
     def router(self):
         return self.__router
 
@@ -81,11 +56,6 @@ class Server:
     @property
     def logger(self):
         return self.__logger
-
-    # def add_middlewares(self, middlewares: list[Middleware]):
-    #     for m in middlewares:
-    #         if m not in self.__middlewares:
-    #             self.__middlewares.append(m)
 
     def verify_middlewares(self, request: Request) -> bool | str:
         for m in self.__middlewares:
@@ -122,12 +92,14 @@ class Server:
         client_socket.send(response.encode())
 
     def run(self):
-        self.logger.info(f"Server started {self.bind_ip}:{self.bind_port}")
+        self.logger.info(
+            f"Server started {self.socket.bind_ip}:{self.socket.bind_port}"
+        )
 
         try:
             while True:
                 try:
-                    client, addr = self.socket.accept()
+                    client, addr = self.socket.socket.accept()
                     client_handler = threading.Thread(
                         target=self.handle_client, args=(client, addr)
                     )
@@ -135,7 +107,7 @@ class Server:
                 except socket.timeout:
                     continue
         except KeyboardInterrupt:
-            print("\n[!] Shutting down socket...")
+            self.logger.info("Shutting down socket...")
         finally:
-            self.socket.close()
-            print("[*] Server closed.")
+            self.socket.socket.close()
+            self.logger.info("Server closed.")

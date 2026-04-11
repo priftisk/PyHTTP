@@ -1,4 +1,4 @@
-from server import Server
+from server.server import Server
 from config.config import Config
 
 if __name__ == "__main__":
