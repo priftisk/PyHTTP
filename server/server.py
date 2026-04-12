@@ -19,19 +19,23 @@ class Server:
         self.__config = config
         self.__middlewares = self.__load_middlewares()
 
-    def __load_middlewares(self) -> list[Middleware]:
+    def __load_middlewares(self) -> Middleware | None:
         middlewares = []
         for m in self.__config.middlewares:
             module_path, class_name = m.rsplit(".", 1)
             module = importlib.import_module(module_path)
-            middlewares.append(getattr(module, class_name)())
-        return middlewares
+            middleware = getattr(module, class_name)
+            middlewares.append(middleware(logger=self.__logger))
+
+        for i in range(len(middlewares) - 1):
+            middlewares[i].set_next(middlewares[i + 1])
+
+        return middlewares[0] if middlewares else None
 
     def __verify_middlewares(self, request: Request) -> tuple[bool, str | None]:
-        for m in self.__middlewares:
-            if not m.verify(request):
-                return False, m.error_msg
-        return True, None
+        if not self.__middlewares:
+            return True, None
+        return self.__middlewares.handle(request)
 
     def handle_client(self, client_socket: socket.socket, addr):
         data = client_socket.recv(1024)

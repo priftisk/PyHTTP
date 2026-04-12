@@ -1,31 +1,27 @@
-from middleware.middleware import Middleware
 from request.request import Request
+from middleware.middleware import Middleware
+from logger.logger import Logger
 
 
 class AllowedHosts(Middleware):
-    def __init__(self):
+    def __init__(self, logger: Logger | None = None):
+        super().__init__(name="Allowed Hosts", logger=logger)
         try:
             from settings import ALLOWED_HOSTS
 
             self.__allowed_hosts = ALLOWED_HOSTS
-            super().__init__(name="Allowed Hosts")
-        except ImportError as e:
+        except ImportError:
             self.__allowed_hosts = []
-            raise Exception(e.msg)
-        finally:
-            self.__error_msg = None
+            if self.logger:
+                self.logger.error(
+                    "ALLOWED_HOSTS not found — all hosts will be blocked."
+                )
 
-    @property
-    def error_msg(self):
-        return self.__error_msg
-
-    @error_msg.setter
-    def error_msg(self, value):
-        self.__error_msg = value
-
-    def verify(self, request: Request):
-        super().verify(request)
-        if not request.headers.host.split(":")[0] in self.__allowed_hosts:
+    def handle(self, request: Request) -> tuple[bool, str | None]:
+        host = request.headers.host.split(":")[0]
+        if host not in self.__allowed_hosts:
             self.error_msg = f"Host: {request.headers.host} is not allowed."
-            return False
-        return True
+            if self.logger:
+                self.logger.error(self.error_msg)
+            return False, self.error_msg
+        return self.call_next(request)
