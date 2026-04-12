@@ -27,6 +27,7 @@ class Server:
             middleware = getattr(module, class_name)
             middlewares.append(middleware(logger=self.__logger))
 
+        # Set up the chain the first time the middlewares are loaded
         for i in range(len(middlewares) - 1):
             middlewares[i].set_next(middlewares[i + 1])
 
