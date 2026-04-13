@@ -18,16 +18,30 @@ class HTMLTemplate:
     def __fill_slots(self, kwargs):
         return [TemplateSlot(k, v) for k, v in kwargs.items()]
 
-    def __parse(self):
-        left = self.__html.find("{{")
-        right = self.__html[left::].find("}}")
+    def __parse(self, start=0):
+        if start >= len(self.__html):
+            return
 
-        if left == -1 or right == -1:
-            raise Exception("Error parsing value from template.")
+        search_region = self.__html[start:]
+        left = search_region.find("{{")
+        if left == -1:
+            return
 
-        key = self.html[left + 2 : left + right].rstrip().lstrip()
+        right = search_region.find("}}", left + 2)
+        if right == -1:
+            return
+
+        abs_left, abs_right = start + left, start + right
+
+        key = self.__html[abs_left + 2 : abs_right].strip()
 
         for s in self.__slots:
             if s.field_name == key:
-                self.html = self.html[:left] + s.value + self.html[left + right + 2 :]
-                break
+                self.__html = (
+                    self.__html[:abs_left] + s.value + self.__html[abs_right + 2 :]
+                )
+                # Resume after the substituted value
+                return self.__parse(start=abs_left + len(s.value))
+
+        # No slot matched — skip past this tag to avoid infinite loop
+        return self.__parse(start=abs_right + 2)

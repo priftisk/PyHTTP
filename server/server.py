@@ -60,7 +60,7 @@ class Server:
             else:
                 response = Response(request)
                 raw_html = self.__router.path_to_html(request.path)
-                templ = HTMLTemplate(raw_html, name="Kostas")
+                templ = HTMLTemplate(raw_html, name="Kostas", other_name="Maria")
                 response.body = templ.html
 
             client_socket.send(response.encode())
