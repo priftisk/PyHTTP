@@ -24,8 +24,10 @@ class HTMLTemplate:
 
         if left == -1 or right == -1:
             raise Exception("Error parsing value from template.")
-        key = self.html[left + 2 : left + right]
+
+        key = self.html[left + 2 : left + right].rstrip().lstrip()
+
         for s in self.__slots:
-            print(s.field_name)
             if s.field_name == key:
                 self.html = self.html[:left] + s.value + self.html[left + right + 2 :]
+                break
