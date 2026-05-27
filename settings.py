@@ -4,4 +4,4 @@ ALLOWED_HOSTS = ["localhost"]
 
 MIDDLEWARE = ["middleware.security.AllowedHosts"]
 
-ROUTES = [{"path": "/", "html": "index.html"}, {"path": "/posts", "html": "posts.html"}]
+# ROUTES = [{"path": "/", "html": "index.html"}, {"path": "/posts", "html": "posts.html"}]

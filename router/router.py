@@ -1,15 +1,12 @@
 from helper.filereader import Filereader
 from .route import Route
+from request.request import Request
 
 
 class Router:
     def __init__(self):
         try:
-            from settings import ROUTES
-
             self.__routes: list[Route] = []
-            for route in ROUTES:
-                self.__routes.append(Route(route))
         except ImportError as e:
             raise Exception(e.msg)
         finally:
@@ -26,6 +23,14 @@ class Router:
     @routes.setter
     def routes(self, value):
         self.__routes = value
+
+    def register_route(self, path: str, handler: function):
+        self.__routes.append(Route(path=path, handler=handler))
+
+    def invoke_handler(self, request: Request):
+        for r in self.routes:
+            if r.path == request.path:
+                return r.handler(request)
 
     def show_routes(self):
         print("-----------ROUTES-----------")

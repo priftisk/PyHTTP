@@ -7,7 +7,6 @@ from middleware.middleware import Middleware
 from logger.logger import Logger
 from config.config import Config
 from .server_socket import ServerSocket
-from template.html_template import HTMLTemplate
 import importlib
 
 
@@ -19,6 +18,10 @@ class Server:
         self.__logger = Logger()
         self.__config = config
         self.__middlewares = self.__load_middlewares()
+
+    @property
+    def router(self):
+        return self.__router
 
     def __load_middlewares(self) -> Middleware | None:
         middlewares = []
@@ -58,11 +61,7 @@ class Server:
                 self.__logger.error(f"Route {request.path} does not exist.")
                 response = Response(request, 404)
             else:
-                response = Response(request)
-                raw_html = self.__router.path_to_html(request.path)
-                templ = HTMLTemplate(raw_html, name="Kostas", other_name="Maria")
-                response.body = templ.html
-
+                response = self.router.invoke_handler(request)
             client_socket.send(response.encode())
         finally:
             self.__logger.info(
