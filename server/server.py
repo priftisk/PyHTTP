@@ -7,7 +7,6 @@ from middleware.middleware import Middleware
 from logger.logger import Logger
 from config.config import Config
 from .server_socket import ServerSocket
-from template.html_template import HTMLTemplate
 import importlib
 
 

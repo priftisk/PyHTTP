@@ -1,4 +1,5 @@
-from response.response import Response, Request
+from response.response import Response
+from request.request import Request
 from template.html_template import HTMLTemplate
 
 

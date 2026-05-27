@@ -1,6 +1,6 @@
 from helper.filereader import Filereader
 from .route import Route
-from response.response import Response, Request
+from request.request import Request
 
 
 class Router:
