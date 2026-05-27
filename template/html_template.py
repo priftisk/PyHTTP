@@ -1,10 +1,12 @@
 from .template_slot import TemplateSlot
+from helper.filereader import Filereader
 
 
 class HTMLTemplate:
-    def __init__(self, html, **kwargs):
-        self.__html: str = html
+    def __init__(self, filename, **kwargs):
+        self.__freader: Filereader = Filereader()
         self.__slots: list[TemplateSlot] = self.__fill_slots(kwargs=kwargs)
+        self.__html: str = self.__freader.read(filename).encode()
         self.__parse()
 
     @property
