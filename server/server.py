@@ -20,6 +20,10 @@ class Server:
         self.__config = config
         self.__middlewares = self.__load_middlewares()
 
+    @property
+    def router(self):
+        return self.__router
+
     def __load_middlewares(self) -> Middleware | None:
         middlewares = []
         for m in self.__config.middlewares:
@@ -58,10 +62,11 @@ class Server:
                 self.__logger.error(f"Route {request.path} does not exist.")
                 response = Response(request, 404)
             else:
-                response = Response(request)
-                raw_html = self.__router.path_to_html(request.path)
-                templ = HTMLTemplate(raw_html, name="Kostas", other_name="Maria")
-                response.body = templ.html
+                # response = Response(request)
+                response = self.router.invoke_handler(request)
+                # raw_html = self.__router.path_to_html(request.path)
+                # templ = HTMLTemplate(raw_html, name="Kostas", other_name="Maria")
+                # response.body = templ.html
 
             client_socket.send(response.encode())
         finally:
