@@ -1,2 +1,9 @@
+.PHONY: run test
+
+PYTHON := python
+
 run:
-	python main.py
+	$(PYTHON) main.py
+
+test:
+	$(PYTHON) -m pytest test/test_pyhttp.py -v
