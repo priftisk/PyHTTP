@@ -1,1 +1,3 @@
-GET localhost:9999
+POST http://localhost:9999
+###
+GET http://localhost:9999/posts
