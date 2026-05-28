@@ -1,6 +1,6 @@
-from response.response import Response
-from request.request import Request
-from template.html_template import HTMLTemplate
+from pyhttp.response.response import Response
+from pyhttp.request.request import Request
+from pyhttp.template.html_template import HTMLTemplate
 
 
 def index_handler(request: Request) -> Response:

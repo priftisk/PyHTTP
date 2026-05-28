@@ -1,22 +1,22 @@
 import socket, threading
-from request.request import Request
-from response.response import Response
-from router.router import Router
+from pyhttp.request.request import Request
+from pyhttp.response.response import Response
+from pyhttp.router.router import Router
 from helper.client_handler import ClientHandler
-from middleware.middleware import Middleware
-from logger.logger import Logger
-from config.config import Config
+from pyhttp.middleware.middleware import Middleware
+from pyhttp.logger.logger import Logger
+from pyhttp.config.config import Config
 from .server_socket import ServerSocket
 import importlib
 
 
 class Server:
-    def __init__(self, config: Config):
+    def __init__(self, config: Config = Config()):
+        self.__config = config
         self.__socket = ServerSocket(config)
         self.__router = Router()
         self.__client_handler = ClientHandler()
         self.__logger = Logger()
-        self.__config = config
         self.__middlewares = self.__load_middlewares()
 
     @property

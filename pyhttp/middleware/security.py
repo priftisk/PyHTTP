@@ -1,6 +1,6 @@
-from request.request import Request
-from middleware.middleware import Middleware
-from logger.logger import Logger
+from pyhttp.request.request import Request
+from pyhttp.middleware.middleware import Middleware
+from pyhttp.logger.logger import Logger
 
 
 class AllowedHosts(Middleware):

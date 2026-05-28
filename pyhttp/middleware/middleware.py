@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from request.request import Request
-from logger.logger import Logger
+from pyhttp.request.request import Request
+from pyhttp.logger.logger import Logger
 
 
 class Middleware(ABC):

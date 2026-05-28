@@ -1,5 +1,5 @@
 import socket
-from config.config import Config
+from pyhttp.config.config import Config
 
 
 class ServerSocket:

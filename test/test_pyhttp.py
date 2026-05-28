@@ -28,7 +28,7 @@ def make_raw(method="GET", path="/", version="HTTP/1.1", headers=None):
 class TestRequest(unittest.TestCase):
 
     def _make(self, method="GET", path="/", version="HTTP/1.1", extra_headers=None):
-        from request.request import Request
+        from pyhttp.request.request import Request
 
         return Request(make_raw(method, path, version, extra_headers))
 
@@ -49,13 +49,13 @@ class TestRequest(unittest.TestCase):
         self.assertTrue(req.valid)
 
     def test_invalid_on_empty_bytes(self):
-        from request.request import Request
+        from pyhttp.request.request import Request
 
         req = Request(b"")
         self.assertFalse(req.valid)
 
     def test_invalid_on_garbage(self):
-        from request.request import Request
+        from pyhttp.request.request import Request
 
         req = Request(b"\x00\xff\xfe garbage")
         self.assertFalse(req.valid)
@@ -78,57 +78,57 @@ class TestRequest(unittest.TestCase):
 class TestResponse(unittest.TestCase):
 
     def _make_request(self, path="/"):
-        from request.request import Request
+        from pyhttp.request.request import Request
 
         return Request(make_raw(path=path))
 
     def test_default_status_code(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         res = Response(self._make_request())
         self.assertEqual(res.status_code, 200)
 
     def test_status_message_200(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         res = Response(self._make_request(), status_code=200)
         self.assertEqual(res.status_message, "OK")
 
     def test_status_message_404(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         res = Response(self._make_request(), status_code=404)
         self.assertEqual(res.status_message, "Not Found")
 
     def test_status_message_405(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         res = Response(self._make_request(), status_code=405)
         self.assertEqual(res.status_message, "Method Not Allowed")
 
     def test_encode_returns_bytes(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         res = Response(self._make_request(), status_code=200)
         encoded = res.encode()
         self.assertIsInstance(encoded, bytes)
 
     def test_encode_contains_status_line(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         res = Response(self._make_request(), status_code=200)
         encoded = res.encode()
         self.assertIn(b"HTTP/1.1 200 OK", encoded)
 
     def test_encode_404_contains_not_found(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         res = Response(self._make_request(), status_code=404)
         encoded = res.encode()
         self.assertIn(b"404", encoded)
 
     def test_request_stored_on_response(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         req = self._make_request("/about")
         res = Response(req, status_code=200)
@@ -143,9 +143,9 @@ class TestResponse(unittest.TestCase):
 class TestRouter(unittest.TestCase):
 
     def setUp(self):
-        from router.router import Router
-        from request.request_methods import RequestMethod
-        from request.request_path import RequestPath
+        from pyhttp.router.router import Router
+        from pyhttp.request.request_methods import RequestMethod
+        from pyhttp.request.request_path import RequestPath
 
         self.Router = Router
         self.RequestMethod = RequestMethod
@@ -178,7 +178,7 @@ class TestRouter(unittest.TestCase):
         self.assertFalse(router.route_exists("/missing"))
 
     def test_invoke_handler_calls_handler_on_match(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         router = self.Router()
         req = self._make_request(path="/")
@@ -190,7 +190,7 @@ class TestRouter(unittest.TestCase):
         self.assertIs(result, mock_response)
 
     def test_invoke_handler_returns_404_for_unknown_path(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         router = self.Router()
         req = self._make_request(path="/does-not-exist")
@@ -199,7 +199,7 @@ class TestRouter(unittest.TestCase):
         self.assertEqual(result.status_code, 404)
 
     def test_invoke_handler_returns_405_for_wrong_method(self):
-        from response.response import Response
+        from pyhttp.response.response import Response
 
         router = self.Router()
         handler = MagicMock()
@@ -239,13 +239,13 @@ class TestRouter(unittest.TestCase):
 class TestMiddleware(unittest.TestCase):
 
     def _make_request(self):
-        from request.request import Request
+        from pyhttp.request.request import Request
 
         return Request(make_raw())
 
     def _make_middleware(self, name="test", should_pass=True, logger=None):
         """Create a concrete Middleware subclass on the fly."""
-        from middleware.middleware import Middleware
+        from pyhttp.middleware.middleware import Middleware
 
         class ConcreteMiddleware(Middleware):
             def handle(self, request):

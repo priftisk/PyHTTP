@@ -1,7 +1,7 @@
 from .route import Route
-from request.request import Request
-from request.request_methods import RequestMethod
-from response.response import Response
+from pyhttp.request.request import Request
+from pyhttp.request.request_methods import RequestMethod
+from pyhttp.response.response import Response
 
 
 class Router:

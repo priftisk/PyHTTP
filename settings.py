@@ -2,6 +2,6 @@ SERVER_HOST = "0.0.0.0"
 SERVER_PORT = 9999
 ALLOWED_HOSTS = ["localhost"]
 
-MIDDLEWARE = ["middleware.security.AllowedHosts"]
+MIDDLEWARE = ["pyhttp.middleware.security.AllowedHosts"]
 
 # ROUTES = [{"path": "/", "html": "index.html"}, {"path": "/posts", "html": "posts.html"}]

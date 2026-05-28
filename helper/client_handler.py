@@ -1,6 +1,6 @@
 from collections import defaultdict
 import socket
-from request.request import Request
+from pyhttp.request.request import Request
 
 request_repr = lambda x: f"{x.method} {x.path} {x.timestamp}"
 

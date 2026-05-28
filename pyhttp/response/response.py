@@ -1,6 +1,6 @@
-from request.request import Request
-from response.response_headers import ResponseHeaders
-from response.response_body import ResponseBody
+from pyhttp.request.request import Request
+from pyhttp.response.response_headers import ResponseHeaders
+from pyhttp.response.response_body import ResponseBody
 
 mappings: dict[int, str] = {
     200: "OK",

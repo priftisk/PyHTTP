@@ -1,5 +1,5 @@
-from request.request_methods import RequestMethod
-from request.request import Request
+from pyhttp.request.request_methods import RequestMethod
+from pyhttp.request.request import Request
 from .path import Path
 
 

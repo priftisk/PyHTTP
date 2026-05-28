@@ -1,6 +1,6 @@
-from request.request_headers import *
+from pyhttp.request.request_headers import *
 import datetime
-from request.request_path import RequestPath
+from pyhttp.request.request_path import RequestPath
 
 
 class Request:
