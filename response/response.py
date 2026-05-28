@@ -7,6 +7,7 @@ mappings: dict[int, str] = {
     201: "Created",
     401: "Forbidden",
     404: "Not Found",
+    405: "Method Not Allowed",
     500: "Internal Server Error",
 }
 
@@ -18,7 +19,7 @@ class Response:
         self.__request: Request = request
         self.__http_version: str = "HTTP/1.1"
         self.__status_code: int = status_code
-        self.__status_message: str = "OK"
+        self.__status_message: str = mappings[self.status_code] or "OK"
         self.__headers: ResponseHeaders = ResponseHeaders(content_type=content_type)
         self.__body: ResponseBody = ResponseBody()
 

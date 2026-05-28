@@ -57,9 +57,6 @@ class Server:
 
             if not middlewares_valid:
                 response = Response(request, 401)
-            elif not self.__router.route_exists(request.path):
-                self.__logger.error(f"Route {request.path} does not exist.")
-                response = Response(request, 404)
             else:
                 response = self.router.invoke_handler(request)
             client_socket.send(response.encode())

@@ -1,8 +1,9 @@
-class Route:
-    def __init__(self, path: str, handler: function):
-        if not path or not handler:
-            raise Exception("Path and handler keys are mandatory when defining routes.")
+from request.request_methods import RequestMethod
 
+
+class Route:
+    def __init__(self, methods: list[RequestMethod], path: str, handler: function):
+        self.__methods = methods
         self.__path = path
         self.__handler = handler
 
@@ -14,6 +15,14 @@ class Route:
     def handler(self):
         return self.__handler
 
+    @property
+    def methods(self):
+        return self.__methods
+
+    @methods.setter
+    def methods(self, value):
+        self.__methods = value
+
     @path.setter
     def path(self, value):
         self.__path = value
@@ -21,3 +30,6 @@ class Route:
     @handler.setter
     def handler(self, value):
         self.__handler = value
+
+    def method_allowed(self, method: RequestMethod):
+        return method in self.methods
