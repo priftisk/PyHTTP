@@ -35,9 +35,9 @@ class Router:
         return Response(request, 404)  # Route does not exist
 
     def show_routes(self):
-        print("-----------ROUTES-----------")
+        print("----------------------ROUTES----------------------")
         for route in self.routes:
-            print(f"{route.path} -> {route.html}")
+            print(f"{ ", ".join(m.value for m in route.methods)} {route.path}")
 
     def route_exists(self, route) -> bool:
         for r in self.routes:
