@@ -1,0 +1,5 @@
+POST http://localhost:9999
+###
+GET http://localhost:9999/posts
+###
+GET http://localhost:9999/posts/365421312

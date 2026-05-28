@@ -62,7 +62,7 @@ class Server:
             client_socket.send(response.encode())
         finally:
             self.__logger.info(
-                f"{request.method} {request.path} {response.status_code}"
+                f"{request.method} {request.path.raw} {response.status_code}"
             )
             client_socket.close()
 
