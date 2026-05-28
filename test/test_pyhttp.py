@@ -38,7 +38,7 @@ class TestRequest(unittest.TestCase):
 
     def test_parses_path(self):
         req = self._make(path="/posts")
-        self.assertEqual(req.path, "/posts")
+        self.assertEqual(req.path.base, "/posts")
 
     def test_parses_http_version(self):
         req = self._make(version="HTTP/1.1")
@@ -145,9 +145,11 @@ class TestRouter(unittest.TestCase):
     def setUp(self):
         from router.router import Router
         from request.request_methods import RequestMethod
+        from request.request_path import RequestPath
 
         self.Router = Router
         self.RequestMethod = RequestMethod
+        self.RequestPath = RequestPath
 
     def _make_request(self, method=None, path="/"):
         # Mock the Request so request.method is the actual RequestMethod enum
@@ -156,7 +158,7 @@ class TestRouter(unittest.TestCase):
         # False and every invoke_handler call to fall through to 404/405.
         req = MagicMock()
         req.method = method if method is not None else self.RequestMethod.GET
-        req.path = path
+        req.path = self.RequestPath(path)
         return req
 
     def test_register_route_adds_to_routes(self):
@@ -218,6 +220,15 @@ class TestRouter(unittest.TestCase):
         router.invoke_handler(req_b)
         handler_a.assert_not_called()
         handler_b.assert_called_once()
+
+    def test_route_one_param_is_parsed(self):
+        router = self.Router()
+        handler = MagicMock(return_value=MagicMock())
+        router.register_route([self.RequestMethod.GET], "/test/:id", handler)
+        for r in router.routes:
+            if r.path.base == "/test":
+                assert len(r.path.parameters) == 1
+                assert r.path.parameters[0] == "id"
 
 
 # ---------------------------------------------------------------------------

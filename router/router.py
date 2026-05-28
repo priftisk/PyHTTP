@@ -19,28 +19,43 @@ class Router:
     def register_route(
         self, methods: list[RequestMethod], path: str, handler: function
     ):
-        self.__routes.append(Route(methods=methods, path=path, handler=handler))
+        self.__routes.append(Route(methods=methods, raw_path=path, handler=handler))
 
     def request_method_allowed(
         self, request: Request, allowed_methods: list[RequestMethod]
     ):
         return request.method in allowed_methods
 
+    def matching_parameters(
+        self, request: Request, route: Route
+    ):  # TODO make better check???
+        return len(route.path.parameters) == len(request.path.parameters)
+
     def invoke_handler(self, request: Request):
         for route in self.routes:
-            if route.path == request.path:
+            if route.path.base == request.path.base and self.matching_parameters(
+                request, route
+            ):  # if base path is same and params are same
                 if not route.method_allowed(request.method):
                     return Response(request, 405)  # Method not allowed
-                return route.handler(request)  # Succesful match
+                return route.invoke_handler(
+                    request, route.path.parameters
+                )  # Succesful match
         return Response(request, 404)  # Route does not exist
 
     def show_routes(self):
         print("----------------------ROUTES----------------------")
         for route in self.routes:
-            print(f"{ ", ".join(m.value for m in route.methods)} {route.path}")
+            methods = ", ".join(m for m in route.methods)
 
-    def route_exists(self, route) -> bool:
+            print(f"{methods} {route.path.base} {route.path.parameters}")
+
+    def route_exists(
+        self, route
+    ) -> (
+        bool
+    ):  # TODO Only checkes base route, check for params also (how to get access to request var so matching_parameters func can be used ???)
         for r in self.routes:
-            if r.path == route:
+            if r.path.base == route:
                 return True
         return False

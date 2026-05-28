@@ -1,5 +1,6 @@
 from request.request_headers import *
 import datetime
+from request.request_path import RequestPath
 
 
 class Request:
@@ -51,7 +52,7 @@ class Request:
             decoded = self.raw_string.decode().split("\r\n")[0:-2]
             req = decoded[0].split(" ")
             self.__method = req[0]
-            self.__path = req[1]
+            self.__path = RequestPath(req[1])
             self.__http_version = req[2]
             self.__headers = RequestHeaders([i.split(":", 1) for i in decoded[1:]])
         except Exception as e:
