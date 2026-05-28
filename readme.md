@@ -17,7 +17,7 @@ A lightweight HTTP server framework written in Python — **no third-party depen
 ```bash
 git clone https://github.com/priftisk/PyHTTP.git
 cd PyHTTP
-python main.py
+make run
 ```
 
 No virtual environment or package installation required.
