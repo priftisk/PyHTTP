@@ -56,4 +56,5 @@ class Request:
             self.__http_version = req[2]
             self.__headers = RequestHeaders([i.split(":", 1) for i in decoded[1:]])
         except Exception as e:
+            print("Request parsing failed: ", e)
             self.valid = False

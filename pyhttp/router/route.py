@@ -11,7 +11,7 @@ class Route:
 
     def invoke_handler(self, *args):
         req: Request = args[0]
-        rest = args[1]
+        rest: list[any] = args[1]
 
         if len(rest) == 0:
             return self.handler(req)

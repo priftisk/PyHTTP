@@ -2,6 +2,7 @@ from .route import Route
 from pyhttp.request.request import Request
 from pyhttp.request.request_methods import RequestMethod
 from pyhttp.response.response import Response
+from typing import Callable
 
 
 class Router:
@@ -17,7 +18,7 @@ class Router:
         self.__routes = value
 
     def register_route(
-        self, methods: list[RequestMethod], path: str, handler: function
+        self, methods: list[RequestMethod], path: str, handler: Callable
     ):
         self.__routes.append(Route(methods=methods, raw_path=path, handler=handler))
 

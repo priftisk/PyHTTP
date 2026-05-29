@@ -19,7 +19,7 @@ class Response:
         self.__request: Request = request
         self.__http_version: str = "HTTP/1.1"
         self.__status_code: int = status_code
-        self.__status_message: str = mappings[self.status_code] or "OK"
+        self.__status_message: str = mappings.get(self.status_code, "OK")
         self.__headers: ResponseHeaders = ResponseHeaders(content_type=content_type)
         self.__body: ResponseBody = ResponseBody()
 
@@ -50,7 +50,7 @@ class Response:
     @status_code.setter
     def status_code(self, value):
         self.__status_code = value
-        self.status_message = mappings.get(self.status_code, 404)
+        self.status_message = mappings.get(value, "Unknown")
 
     @status_message.setter
     def status_message(self, value):
